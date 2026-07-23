@@ -19,8 +19,33 @@ const prefix = locale ? `${base}${locale}/` : base;
 type NavLink = { label: string; href: string };
 type NavGroup = { label: string; links: NavLink[] };
 
+// Ukrainian strings are keyed by the English source so the positional call
+// sites below stay untouched; a missing key falls back to English.
+const UK: Record<string, string> = {
+	'Getting Started': 'Початок роботи',
+	'Installation': 'Встановлення',
+	'Quickstart': 'Швидкий старт',
+	'How It Works': 'Як це працює',
+	'Guides': 'Посібники',
+	'Providers': 'Провайдери',
+	'Model Routing': 'Маршрутизація моделей',
+	'Codex Integration': 'Інтеграція з Codex',
+	'Codex App Model Picker': 'Селектор моделей Codex App',
+	'Sidecars: Search & Vision': 'Сайдкари: пошук і зір',
+	'Web Dashboard': 'Веб-панель',
+	'Sub-agent Surface': 'Інтерфейс субагентів',
+	'Reference': 'Довідник',
+	'Configuration': 'Конфігурація',
+	'Adapters': 'Адаптери',
+	'Architecture': 'Архітектура',
+	'Contributing': 'Внесок у проєкт',
+	'Main': 'Основна навігація',
+	'Menu': 'Меню',
+};
+
 const t = (en: string, ko: string, zh: string, ru: string, ja: string) =>
-	locale === 'ko' ? ko : locale === 'zh-cn' ? zh : locale === 'ru' ? ru : locale === 'ja' ? ja : en;
+	locale === 'uk' ? (UK[en] ?? en)
+	: locale === 'ko' ? ko : locale === 'zh-cn' ? zh : locale === 'ru' ? ru : locale === 'ja' ? ja : en;
 
 const groups: NavGroup[] = [
 	{

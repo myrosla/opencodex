@@ -19,15 +19,77 @@ import heroFieldLight from '../assets/hero-route-light.png';
 import heroFieldDark from '../assets/hero-route-dark.png';
 
 interface Props {
-	locale?: 'ko' | 'zh-cn' | 'ru' | 'ja';
+	locale?: 'ko' | 'zh-cn' | 'ru' | 'ja' | 'uk';
 }
 const { locale } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const prefix = locale ? `${base}${locale}/` : base;
 
+// Ukrainian strings keyed by the English source so the positional call sites
+// stay untouched; a missing key falls back to English.
+const UK: Record<string, string> = {
+	'Install': 'Встановлення',
+	'Start the proxy': 'Запуск проксі',
+	'Inject a provider into Codex': 'Впровадження провайдера в Codex',
+	'Codex now routes through ocx': 'Codex тепер працює через ocx',
+	'Getting Started': 'Початок роботи',
+	'Installation': 'Встановлення',
+	'Quickstart': 'Швидкий старт',
+	'How It Works': 'Як це працює',
+	'Guides': 'Посібники',
+	'Providers': 'Провайдери',
+	'Model Routing': 'Маршрутизація моделей',
+	'Codex Integration': 'Інтеграція з Codex',
+	'Codex App Model Picker': 'Селектор моделей Codex App',
+	'Sidecars: Search & Vision': 'Сайдкари: пошук і зір',
+	'Web Dashboard': 'Веб-панель',
+	'Sub-agent Surface': 'Інтерфейс субагентів',
+	'Reference': 'Довідник',
+	'Configuration': 'Конфігурація',
+	'Adapters': 'Адаптери',
+	'Architecture': 'Архітектура',
+	'Project': 'Проєкт',
+	'Contributing': 'Внесок у проєкт',
+	'Run ': 'Запускайте ',
+	' on any LLM.': ' на будь-якій LLM.',
+	'opencodex is a local proxy that serves Codex and Claude Code from one port — translating each wire format to any provider, with streaming, tool calls, reasoning, and images in both directions. Zero client patches.': 'opencodex — локальний проксі, який обслуговує Codex і Claude Code через один порт: транслює кожен wire-формат під будь-якого провайдера, пропускаючи стрімінг, виклики інструментів, міркування та зображення в обидва боки. Жодних патчів на боці клієнта.',
+	'Get Started': 'Почати',
+	'Supported providers': 'Підтримувані провайдери',
+	'40+ providers': '40+ провайдерів',
+	'The opencodex dashboard — live proxy status, routed providers, and available models': 'Панель opencodex — статус проксі в реальному часі, маршрутизовані провайдери та доступні моделі',
+	'Install. Start. Codex, rerouted.': 'Встановіть. Запустіть. Codex — за новим маршрутом.',
+	'Install.': 'Встановіть.',
+	'Start.': 'Запустіть.',
+	'Codex, rerouted.': 'Codex — за новим маршрутом.',
+	'Full quickstart': 'Повний швидкий старт',
+	'Watch Codex run on a routed model.': 'Подивіться, як Codex працює на маршрутизованій моделі.',
+	'Codex App running a task on a routed non-OpenAI model': 'Codex App виконує задачу на маршрутизованій моделі не від OpenAI',
+	'One task, streamed end to end through opencodex.': 'Одна задача — стрімінг через opencodex від початку до кінця.',
+	'One proxy, the whole surface.': 'Один проксі — уся поверхня.',
+	'Any provider': 'Будь-який провайдер',
+	'Five adapters cover Anthropic Messages, Google Gemini, Azure, the OpenAI Responses passthrough, and every OpenAI-compatible Chat Completions endpoint — 40+ built-in providers.': 'П\u2019ять адаптерів покривають Anthropic Messages, Google Gemini, Azure, наскрізний OpenAI Responses та кожен OpenAI-сумісний ендпоінт Chat Completions — 40+ вбудованих провайдерів.',
+	'OAuth or API key': 'OAuth або API-ключ',
+	'Log in with your xAI, Anthropic, or Kimi account — auto-refreshed — forward your ChatGPT login, or paste a key.': 'Увійдіть акаунтом xAI, Anthropic чи Kimi — з автооновленням — перенаправте свій вхід ChatGPT або вставте ключ.',
+	'ChatGPT account pool': 'Пул акаунтів ChatGPT',
+	'Existing threads keep their account; new sessions auto-route to the lowest-usage healthy one after quota refresh.': 'Наявні треди зберігають свій акаунт; нові сесії після оновлення квоти автоматично спрямовуються на найменш завантажений працездатний акаунт.',
+	'Native in the model picker': 'Нативно в селекторі моделей',
+	'Routed models show up in Codex App with reasoning effort levels, next to the native ones.': 'Маршрутизовані моделі з\u2019являються в Codex App із рівнями зусилля міркувань — поряд із нативними.',
+	'Codex App model picker with reasoning effort levels': 'Селектор моделей Codex App із рівнями зусилля міркувань',
+	'Sub-agents': 'Субагенти',
+	'Pin up to five routed or native models for Codex spawn_agent, and switch the v1 / base / v2 surface globally.': 'Закріпіть до п\u2019яти маршрутизованих або нативних моделей для Codex spawn_agent і глобально перемикайте інтерфейс v1 / base / v2.',
+	'ocx claude launches Claude Code against the same port — every routed model in the /model picker, auto-context up to 1M, roster sub-agents, and your claude.ai login stays active.': 'ocx claude запускає Claude Code на тому самому порту — усі маршрутизовані моделі в селекторі /model, auto-context до 1M, субагенти з ростера, а ваш вхід у claude.ai залишається активним.',
+	'Search & vision sidecars': 'Сайдкари пошуку та зору',
+	'Give non-OpenAI models real web search and image understanding through a gpt-5.4-mini sidecar.': 'Дайте моделям не від OpenAI справжній вебпошук і розуміння зображень через sidecar gpt-5.4-mini.',
+	'ocx init writes a provider into your Codex config and shares one model catalog with Codex CLI, TUI, App, and SDK. ocx stop restores native Codex cleanly.': 'ocx init записує провайдера у вашу конфігурацію Codex, а Codex CLI, TUI, App і SDK використовують спільний каталог моделей. ocx stop чисто відновлює нативний Codex.',
+	'Documentation map': 'Карта документації',
+	'Explore the docs': 'Ознайомтеся з документацією',
+	'opencodex is an independent community project, not affiliated with or endorsed by OpenAI, Anthropic, or any other provider. Some providers may restrict accounts that route traffic through third-party proxies — review each provider\u2019s Terms of Service before connecting.': 'opencodex — незалежний проєкт спільноти, не пов\u2019язаний з OpenAI, Anthropic чи будь-яким іншим провайдером і не схвалений ними. Деякі провайдери можуть обмежувати акаунти, що спрямовують трафік через сторонні проксі — перед під\u2019єднанням перегляньте Умови надання послуг кожного провайдера.',
+};
+
 const t = (en: string, ko: string, zh: string, ru: string, ja: string) =>
-	locale === 'ko' ? ko : locale === 'zh-cn' ? zh : locale === 'ru' ? ru : locale === 'ja' ? ja : en;
+	locale === 'uk' ? (UK[en] ?? en)
+	: locale === 'ko' ? ko : locale === 'zh-cn' ? zh : locale === 'ru' ? ru : locale === 'ja' ? ja : en;
 
 const icons: Record<string, string> = {
 	// Lucide outline paths (24x24, stroke)
